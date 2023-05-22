@@ -21,9 +21,50 @@ dotenv.config();
 
 const app = express();
 
+//cara menyimpan session di database
+const sessionStore = SequelizeStore(session.Store);
+
+const store = new sessionStore({
+    db: db
+});
+
+// (async()=>{
+//     await db.sync();
+// })();
+
+app.use(session({
+    secret: process.env.SESS_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    //menyimpan session store ke session
+    store: store,
+    cookie:{
+        secure: 'auto'
+    }
+}));
+
+app.use(cors({
+    credentials: true,
+    origin: process.env.LINK
+}))
+
 app.use(express.json());
+app.use(fileUpload());
 app.use(express.static("public"));
 
-app.listen(5000, ()=>{
-    console.log("server running at posrt 5000")
-});
+//router
+app.use(UserRouter);
+app.use(TicketRouter);
+app.use(AuthRouter);
+app.use(StatusRouter);
+app.use(StatusTicketRouter);
+app.use(TypeRouter);
+app.use(Responsible);
+app.use(Privilege);
+app.use(Import);
+
+// store.sync();
+
+app.listen(process.env.PORT, ()=> {
+    console.log("server running..")
+})
