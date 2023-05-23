@@ -22,7 +22,7 @@ const Login = () => {
 
   useEffect(()=>{
     if(user || isSuccess){
-      navigate("/admin");
+      navigate("/dataUser");
     }
     else{
       dispatch(reset())
